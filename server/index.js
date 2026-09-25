@@ -5,6 +5,7 @@ import http from 'node:http';
 import https from 'node:https';
 import { URL } from 'node:url';
 import netcalc from './netcalc.js';
+import { validateHost, parsePorts, COMMON_PORTS } from './ports.js';
 
 const app = express();
 app.use(express.json());
@@ -192,6 +193,60 @@ app.get('/api/netcalc', (req, res) => {
   const result = netcalc(input);
   if (result.error) return res.status(400).json(result);
   res.json(result);
+});
+
+// ---------- 5. TCP port checker ----------
+
+function checkPort(host, port, timeoutMs = 1500) {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    const started = process.hrtime.bigint();
+    const done = (open) => {
+      socket.destroy();
+      const ms = Number(process.hrtime.bigint() - started) / 1e6;
+      resolve({ port, open, ms: Math.round(ms) });
+    };
+    socket.setTimeout(timeoutMs);
+    socket.once('connect', () => done(true));
+    socket.once('timeout', () => done(false));
+    socket.once('error', () => done(false));
+    socket.connect(port, host);
+  });
+}
+
+app.get('/api/port-check', async (req, res) => {
+  const hostCheck = validateHost(req.query.host);
+  if (hostCheck.error) return res.status(400).json(hostCheck);
+  const { host } = hostCheck;
+
+  let portsResult = parsePorts(req.query.ports);
+  if (portsResult.error) return res.status(400).json({ error: portsResult.error });
+
+  let resolvedHost = host;
+  if (!isIp(host)) {
+    try {
+      resolvedHost = (await dns.lookup(host)).address;
+    } catch {
+      return res.status(400).json({ error: `Could not resolve "${host}".` });
+    }
+  }
+
+  const results = await Promise.all(portsResult.ports.map((port) => checkPort(resolvedHost, port)));
+  const labelFor = Object.fromEntries(COMMON_PORTS.map((p) => [p.port, p.label]));
+
+  res.json({
+    host,
+    resolvedIp: resolvedHost,
+    scannedAt: new Date().toISOString(),
+    openCount: results.filter((r) => r.open).length,
+    totalScanned: results.length,
+    results: results.map((r) => ({
+      port: r.port,
+      service: labelFor[r.port] || null,
+      state: r.open ? 'open' : 'closed-or-filtered',
+      responseMs: r.open ? r.ms : null,
+    })),
+  });
 });
 
 app.listen(PORT, () => {

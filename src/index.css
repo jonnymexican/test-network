@@ -194,6 +194,22 @@ body {
 .status-code.ok { color: #3fb950; }
 .status-code.bad { color: #f85149; }
 
+.state-open { color: #3fb950; }
+.state-closed { color: #484f58; }
+
+.hint {
+  color: #7d8590;
+  font-size: 0.85rem;
+  margin: 0.75rem 0 0;
+}
+
+.hint code {
+  color: #e6edf3;
+  background: #161b22;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
 .app-footer {
   margin-top: 3rem;
   color: #484f58;

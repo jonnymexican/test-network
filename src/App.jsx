@@ -3,12 +3,14 @@ import DnsLookup from './tools/DnsLookup.jsx';
 import IpInfo from './tools/IpInfo.jsx';
 import SubnetCalculator from './tools/SubnetCalculator.jsx';
 import HeaderInspector from './tools/HeaderInspector.jsx';
+import PortChecker from './tools/PortChecker.jsx';
 
 const TABS = [
   { id: 'dns', label: 'DNS Lookup', component: DnsLookup },
   { id: 'ip', label: 'IP Info', component: IpInfo },
   { id: 'subnet', label: 'Subnet Calculator', component: SubnetCalculator },
   { id: 'headers', label: 'HTTP Headers', component: HeaderInspector },
+  { id: 'ports', label: 'Port Checker', component: PortChecker },
 ];
 
 export default function App() {
