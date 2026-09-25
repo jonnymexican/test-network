@@ -37,6 +37,10 @@ The frontend never talks to third-party services directly — it calls the local
 | `GET /api/dns` | `domain`, `type` (default `ALL`) | Resolves A, AAAA, CNAME, MX, NS, TXT, SOA, SRV records |
 | `GET /api/ip-info` | `ip` (optional — defaults to caller's public IP) | Geolocation, org, ASN via ipapi.co |
 | `GET /api/headers` | `url` | Fetches the URL server-side, returns status, timing, and all response headers |
+| `GET /api/port-check` | `host`, `ports` (optional) | TCP connect scan with timing; blank ports = common-16 preset |
+| `GET /api/tls-info` | `host`, `port` (default 443) | Certificate issuer, validity, SANs, protocol, cipher, trust state |
+| `GET /api/propagation` | `domain`, `type` (A/AAAA/TXT/NS) | Same query across Cloudflare/Google/Quad9/OpenDNS with consistency check |
+| `GET /api/security-headers` | `url` | Grades a site A–F on HSTS, CSP, and other protective headers |
 | `GET /api/netcalc` | `cidr` | Network/broadcast/mask, host range, RFC classification, binary view |
 
 ### Examples

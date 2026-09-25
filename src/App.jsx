@@ -4,6 +4,9 @@ import IpInfo from './tools/IpInfo.jsx';
 import SubnetCalculator from './tools/SubnetCalculator.jsx';
 import HeaderInspector from './tools/HeaderInspector.jsx';
 import PortChecker from './tools/PortChecker.jsx';
+import TlsInspector from './tools/TlsInspector.jsx';
+import DnsPropagation from './tools/DnsPropagation.jsx';
+import SecurityHeaders from './tools/SecurityHeaders.jsx';
 
 const TABS = [
   { id: 'dns', label: 'DNS Lookup', component: DnsLookup },
@@ -11,6 +14,9 @@ const TABS = [
   { id: 'subnet', label: 'Subnet Calculator', component: SubnetCalculator },
   { id: 'headers', label: 'HTTP Headers', component: HeaderInspector },
   { id: 'ports', label: 'Port Checker', component: PortChecker },
+  { id: 'tls', label: 'TLS Inspector', component: TlsInspector },
+  { id: 'propagation', label: 'DNS Propagation', component: DnsPropagation },
+  { id: 'security', label: 'Security Grade', component: SecurityHeaders },
 ];
 
 export default function App() {

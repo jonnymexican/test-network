@@ -6,6 +6,9 @@ import https from 'node:https';
 import { URL } from 'node:url';
 import netcalc from './netcalc.js';
 import { validateHost, parsePorts, COMMON_PORTS } from './ports.js';
+import { getTlsInfo } from './tlsInfo.js';
+import { checkPropagation } from './propagation.js';
+import { gradeSecurityHeaders } from './securityHeaders.js';
 
 const app = express();
 app.use(express.json());
@@ -247,6 +250,48 @@ app.get('/api/port-check', async (req, res) => {
       responseMs: r.open ? r.ms : null,
     })),
   });
+});
+
+// ---------- 6. TLS certificate inspector ----------
+
+app.get('/api/tls-info', async (req, res) => {
+  const hostCheck = validateHost(req.query.host);
+  if (hostCheck.error) return res.status(400).json(hostCheck);
+
+  const port = Number(req.query.port) || 443;
+  if (port < 1 || port > 65535) return res.status(400).json({ error: 'Port must be 1–65535.' });
+
+  try {
+    res.json(await getTlsInfo(hostCheck.host, port));
+  } catch (err) {
+    res.status(502).json({ error: err.message });
+  }
+});
+
+// ---------- 7. DNS propagation checker ----------
+
+app.get('/api/propagation', async (req, res) => {
+  const domain = String(req.query.domain || '').trim().replace(/\.$/, '');
+  const type = String(req.query.type || 'A').toUpperCase();
+  if (!domain || net.isIP(domain)) {
+    return res.status(400).json({ error: 'Provide a domain name (not an IP).' });
+  }
+
+  try {
+    res.json(await checkPropagation(domain, type));
+  } catch (err) {
+    res.status(502).json({ error: err.message });
+  }
+});
+
+// ---------- 8. Security header grader ----------
+
+app.get('/api/security-headers', async (req, res) => {
+  try {
+    res.json(await gradeSecurityHeaders(req.query.url));
+  } catch (err) {
+    res.status(502).json({ error: err.message });
+  }
 });
 
 app.listen(PORT, () => {

@@ -210,6 +210,34 @@ body {
   border-radius: 4px;
 }
 
+.warn { color: #d29922; }
+
+.grade-line {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 1.25rem 0 0;
+  font-size: 1rem;
+}
+
+.grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 0.6rem;
+  font-size: 1.7rem;
+  font-weight: 800;
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.grade-A { background: rgba(63, 185, 80, 0.15); color: #3fb950; border: 1px solid #3fb950; }
+.grade-B { background: rgba(88, 166, 255, 0.15); color: #58a6ff; border: 1px solid #58a6ff; }
+.grade-C { background: rgba(210, 153, 34, 0.15); color: #d29922; border: 1px solid #d29922; }
+.grade-D { background: rgba(248, 129, 42, 0.15); color: #f0883e; border: 1px solid #f0883e; }
+.grade-F { background: rgba(248, 81, 73, 0.15); color: #f85149; border: 1px solid #f85149; }
+
 .app-footer {
   margin-top: 3rem;
   color: #484f58;
