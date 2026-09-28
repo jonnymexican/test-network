@@ -1,4 +1,6 @@
 import express from 'express';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import dns from 'node:dns/promises';
 import net from 'node:net';
 import http from 'node:http';
@@ -12,6 +14,8 @@ import { gradeSecurityHeaders } from './securityHeaders.js';
 
 const app = express();
 app.use(express.json());
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const envPort = Number(process.env.PORT);
 const PORT = Number.isInteger(envPort) && envPort > 0 ? envPort : 4000;
@@ -294,6 +298,22 @@ app.get('/api/security-headers', async (req, res) => {
   }
 });
 
+// ---------- health check (for uptime monitors and platform probes) ----------
+
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true, uptimeSec: Math.round(process.uptime()) });
+});
+
+// ---------- production client (serves the built vite app from dist/) ----------
+
+const distDir = path.join(__dirname, '..', 'dist');
+app.use(express.static(distDir));
+app.get(/^\/(?!api\/).*/, (req, res) => {
+  res.sendFile(path.join(distDir, 'index.html'), (err) => {
+    if (err) res.status(404).send('Client build missing. Run: npm run build');
+  });
+});
+
 app.listen(PORT, () => {
-  console.log(`network-tools API listening on http://localhost:${PORT}`);
+  console.log(`network-tools listening on http://localhost:${PORT}`);
 });
